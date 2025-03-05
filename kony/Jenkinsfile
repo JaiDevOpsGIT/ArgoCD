@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'node:16-alpine'  // Your Jenkins agent Docker image
+            image 'node:18-alpine'  // Your Jenkins agent Docker image
         //    args '--privileged -v /var/run/docker.sock:/var/run/docker.sock'  // Allow Docker-in-Docker (DinD)
         }
     }
@@ -27,15 +27,15 @@ pipeline {
         //     }
         // }
 
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    sh "cd kony"
-                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
-                    sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG}"
-                }
-            }
-        }
+        // stage('Build Docker Image') {
+        //     steps {
+        //         script {
+        //             sh "cd kony"
+        //             sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+        //             sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG}"
+        //         }
+        //     }
+        // }
 
     /*    stage('Push Docker Image') {
             steps {
