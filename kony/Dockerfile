@@ -1,5 +1,13 @@
 FROM node:16-alpine
 
+# Install Docker and Docker-in-Docker (dind)
+RUN apk add --no-cache docker \
+    && curl -fsSL https://get.docker.com/ | sh \
+    && apk add --no-cache bash
+
+# Ensure Docker is installed
+RUN docker --version
+
 # Install dependencies
 RUN apk add --no-cache openjdk11 bash unzip curl
 
