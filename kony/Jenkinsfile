@@ -19,13 +19,13 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                sh """
-                    sudo apk add --no-cache docker openjdk11 bash unzip curl
-                """
-            }
-        }
+        // stage('Install Dependencies') {
+        //     steps {
+        //         sh """
+        //             sudo apk add --no-cache docker openjdk11 bash unzip curl
+        //         """
+        //     }
+        // }
 
         stage('Build Docker Image') {
             steps {
