@@ -1,0 +1,68 @@
+pipeline {
+    agent {
+        docker {
+            image 'node:16-alpine'  // Your Jenkins agent Docker image
+            args '--privileged -v /var/run/docker.sock:/var/run/docker.sock'  // Allow Docker-in-Docker (DinD)
+        }
+    }
+
+    environment {
+        DOCKER_IMAGE = 'jai-jenkins-agent'
+        DOCKER_TAG = '1.0'  // Update as needed
+        DOCKER_REGISTRY = 'https://hub.docker.com/u/dockerjai123/kony_mb'  
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/JaiDevOpsGIT/ArgoCD.git'  // Update with your Git repo
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh """
+                    apk add --no-cache docker openjdk11 bash unzip curl
+                """
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "cd kony"
+                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                    sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG}"
+                }
+            }
+        }
+
+    /*    stage('Push Docker Image') {
+            steps {
+                script {
+                  //  withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh "echo "" | docker login "${DOCKER_REGISTRY}" -u "" --password-stdin"
+                        sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    //    sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest"
+                   // }
+                }
+            }
+        } */
+
+        stage('Cleanup') {
+            steps {
+                sh "docker rmi ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG} || true"
+            //    sh "docker rmi ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest || true"
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Docker image ${DOCKER_IMAGE}:${DOCKER_TAG} built and pushed successfully!"
+        }
+        failure {
+            echo "Build failed!"
+        }
+    }
+}
