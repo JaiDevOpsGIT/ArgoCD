@@ -22,7 +22,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh """
-                    apk add --no-cache docker openjdk11 bash unzip curl
+                    sudo apk add --no-cache docker openjdk11 bash unzip curl
                 """
             }
         }
